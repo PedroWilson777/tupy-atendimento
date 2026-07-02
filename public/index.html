@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tupy Carrocerias — Atendimento Iara</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --green:#166534;--green-light:#dcfce7;--green-dark:#14532d;
+  --bg:#f6f8f4;--surface:#ffffff;--border:#d7e3d0;
+  --text:#111827;--muted:#6b7280;--soft:#f9fafb;
+  --accent:#ca8a04;--red:#ef4444;--orange:#f97316;
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* HEADER */
+header{background:var(--green-dark);padding:0 20px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.brand{display:flex;align-items:center;gap:10px;color:#fff}
+.brand-icon{width:30px;height:30px;background:rgba(255,255,255,.2);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.brand h1{font-size:15px;font-weight:700}
+.brand span{font-size:11px;opacity:.7}
+.header-right{display:flex;align-items:center;gap:8px}
+.hdr-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:4px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;display:flex;align-items:center;gap:5px}
+.hdr-btn:hover{background:rgba(255,255,255,.25)}
+.wpp-badge{background:rgba(255,255,255,.2);color:#fff;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600}
+.wpp-badge.on{background:#16a34a}
+.status-pill{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:20px;padding:3px 11px;font-size:11px;display:flex;align-items:center;gap:5px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#fbbf24;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.main{display:flex;flex:1;overflow:hidden}
+
+/* CONVERSAS */
+.conv-panel{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.conv-header{padding:12px 12px 8px;border-bottom:1px solid var(--border)}
+.conv-header h2{font-size:11px;font-weight:700;color:var(--green-dark);text-transform:uppercase;letter-spacing:.5px}
+.conv-list{flex:1;overflow-y:auto;padding:5px}
+.conv-item{border-radius:8px;padding:8px 9px;margin-bottom:2px;cursor:pointer;border:1px solid transparent;transition:.12s;display:flex;align-items:center;gap:8px}
+.conv-item:hover{background:var(--soft)}
+.conv-item.active{background:var(--green-light);border-color:var(--border)}
+.conv-av{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#6366f1,#8b5cf6)}
+.conv-av.unk{background:#e5e7eb;color:var(--muted)}
+.conv-body{flex:1;min-width:0}
+.conv-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv-preview{font-size:10px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.conv-time{font-size:10px;color:var(--muted)}
+.conv-del{opacity:0;font-size:11px;color:var(--muted);padding:2px 4px;border-radius:4px;cursor:pointer;transition:.1s;flex-shrink:0}
+.conv-item:hover .conv-del{opacity:1}
+.conv-del:hover{background:#fee2e2;color:#dc2626}
+.conv-empty{padding:22px 12px;text-align:center;color:var(--muted);font-size:12px;line-height:1.6}
+.paused-badge{font-size:9px;background:#fff3cd;color:#92400e;border-radius:4px;padding:1px 5px;font-weight:600}
+
+/* CHAT */
+.chat-wrap{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
+.chat-topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:9px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.client-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0}
+.tb-info{flex:1}
+.tb-info h3{font-size:13px;font-weight:700}
+.tb-phone{font-size:10px;color:var(--muted);font-family:monospace}
+.topbar-actions{display:flex;align-items:center;gap:6px}
+.tb-action-btn{border:1px solid var(--border);background:var(--soft);border-radius:7px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--text);transition:.15s;display:flex;align-items:center;gap:4px}
+.tb-action-btn:hover{background:var(--green-light);border-color:var(--green)}
+.tb-action-btn.pause-on{background:#fff3cd;border-color:#f59e0b;color:#92400e}
+.tb-action-btn.pause-on:hover{background:#fde68a}
+
+/* MENSAGENS — CLIENTE ESQUERDA, IARA DIREITA */
+.chat-messages{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:8px}
+.msg{display:flex;gap:8px;animation:fadeUp .2s ease;max-width:80%}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* CLIENTE → esquerda */
+.msg.user{align-self:flex-start;flex-direction:row}
+.msg.user .msg-av{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
+.msg.user .bubble{background:var(--surface);border:1px solid var(--border);border-radius:14px;border-top-left-radius:3px;color:var(--text)}
+.msg.user .msg-time{text-align:left}
+
+/* IARA → direita */
+.msg.bot{align-self:flex-end;flex-direction:row-reverse}
+.msg.bot .msg-av{background:linear-gradient(135deg,var(--green),var(--accent));color:#fff}
+.msg.bot .bubble{background:var(--green);color:#fff;border-radius:14px;border-top-right-radius:3px}
+.msg.bot .msg-time{text-align:right}
+
+.msg-av{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:2px}
+.bubble{max-width:100%;padding:9px 13px;font-size:13px;line-height:1.55}
+.msg-time{font-size:10px;color:var(--muted);margin-top:3px;padding:0 2px}
+.manual-tag{font-size:9px;background:rgba(255,255,255,.3);border-radius:3px;padding:1px 4px;margin-left:4px}
+.msg.user .manual-tag{background:#e5e7eb;color:var(--muted)}
+.audio-bubble{display:flex;align-items:center;gap:6px;font-size:12px;opacity:.9}
+.audio-bubble svg{width:14px;height:14px}
+.img-msg{max-width:220px;border-radius:10px;overflow:hidden;border:1px solid rgba(0,0,0,.08)}
+.img-msg img{width:100%;display:block;max-height:200px;object-fit:cover}
+.img-caption{padding:5px 8px;font-size:11px;font-weight:500}
+
+/* INPUT AREA */
+.chat-input-area{background:var(--surface);border-top:1px solid var(--border);padding:10px 14px;display:flex;gap:6px;align-items:flex-end;flex-shrink:0}
+.chat-input{flex:1;border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:13px;font-family:inherit;color:var(--text);resize:none;min-height:39px;max-height:110px;outline:none;background:var(--soft)}
+.chat-input:focus{border-color:var(--green);box-shadow:0 0 0 2px rgba(22,101,52,.1)}
+.icon-btn{width:37px;height:37px;border:1px solid var(--border);border-radius:9px;background:var(--soft);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s;color:var(--muted)}
+.icon-btn:hover{background:var(--green-light);border-color:var(--green);color:var(--green)}
+.icon-btn svg{width:16px;height:16px}
+.send-btn{background:var(--green);color:#fff;border:none;border-radius:9px;width:37px;height:37px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s}
+.send-btn:hover{background:var(--green-dark)}
+.send-btn:disabled{background:#9ca3af;cursor:not-allowed}
+.send-btn svg{width:15px;height:15px}
+
+/* Gravação de áudio */
+.icon-btn.recording{background:#fee2e2;border-color:var(--red);color:var(--red);animation:recPulse 1s infinite}
+@keyframes recPulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* No conv */
+.no-conv{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);text-align:center;gap:8px;font-size:13px}
+.no-conv-icon{font-size:38px;opacity:.35}
+
+/* ORÇAMENTOS */
+.orders-panel{width:260px;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.orders-header{padding:12px 12px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.orders-header h2{font-size:11px;font-weight:700;color:var(--green-dark);text-transform:uppercase;letter-spacing:.5px}
+.orders-count{background:var(--accent);color:#fff;border-radius:20px;font-size:10px;font-weight:700;padding:2px 7px}
+.orders-list{flex:1;overflow-y:auto;padding:7px}
+.order-card{background:var(--soft);border:1px solid var(--border);border-radius:9px;padding:9px;margin-bottom:6px;animation:fadeUp .25s ease}
+.order-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
+.order-client{font-size:12px;font-weight:700}
+.order-time{font-size:10px;color:var(--muted)}
+.order-phone{font-size:10px;color:var(--muted);font-family:monospace;margin-bottom:3px}
+.order-product{font-size:11px;margin-bottom:3px}
+.order-obs{font-size:10px;color:var(--muted);margin-top:2px}
+.order-new{display:inline-block;font-size:10px;border-radius:4px;padding:2px 6px;font-weight:600;background:#fef9c3;color:#854d0e;margin-top:4px}
+.order-actions{display:flex;gap:4px;margin-top:6px}
+.order-btn{flex:1;border:none;border-radius:5px;padding:5px 0;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
+.order-btn.c{background:#dcfce7;color:#166534}
+.order-btn.r{background:#fee2e2;color:#991b1b}
+.orders-empty{padding:26px 12px;text-align:center;color:var(--muted);font-size:12px;line-height:1.6}
+
+/* MODAIS */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;padding:22px;width:380px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.18)}
+.modal h3{font-size:14px;font-weight:700;margin-bottom:14px;color:var(--green-dark)}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:10px;font-weight:700;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px}
+.field input,.field textarea,.field select{width:100%;border:1px solid #e5e7eb;border-radius:7px;padding:7px 9px;font-size:12px;font-family:inherit;color:var(--text);outline:none;background:#fafafa}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--green);box-shadow:0 0 0 2px rgba(22,101,52,.1)}
+.field textarea{resize:vertical;min-height:70px}
+.modal-btns{display:flex;gap:7px;margin-top:14px}
+.btn-save{flex:1;background:var(--green);color:#fff;border:none;border-radius:7px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-save:hover{background:var(--green-dark)}
+.btn-cancel{background:#f3f4f6;border:none;border-radius:7px;padding:9px 13px;font-size:12px;cursor:pointer;font-family:inherit;color:var(--muted)}
+
+/* Upload imagem (envio no chat) */
+.img-upload-zone{border:2px dashed var(--border);border-radius:9px;padding:16px 12px;text-align:center;cursor:pointer;transition:.15s;background:var(--soft);position:relative}
+.img-upload-zone:hover{border-color:var(--green);background:var(--green-light)}
+.img-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.img-upload-icon{font-size:22px;margin-bottom:4px}
+.img-upload-text{font-size:12px;color:var(--muted);line-height:1.4}
+.img-upload-text strong{color:var(--green);font-weight:600}
+
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:4px}
+
+/* Imagem send modal */
+#send-img-preview{max-width:100%;max-height:200px;border-radius:8px;margin-top:8px;display:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-icon">🚛</div>
+    <div><h1>Tupy Carrocerias</h1><span>Atendimento Iara · WhatsApp + IA</span></div>
+  </div>
+  <div class="header-right">
+    <button class="hdr-btn" onclick="openSettingsModal()">⚙️ Iara</button>
+    <span class="wpp-badge" id="wpp-status">WhatsApp</span>
+    <div class="status-pill"><div class="status-dot"></div> Iara Online</div>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- CONVERSAS -->
+  <div class="conv-panel">
+    <div class="conv-header"><h2>💬 Conversas</h2></div>
+    <div class="conv-list" id="conv-list"><div class="conv-empty">Carregando...</div></div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-wrap" id="chat-wrap">
+    <div class="no-conv">
+      <div class="no-conv-icon">💬</div>
+      <div>As conversas do WhatsApp<br>aparecem aqui em tempo real</div>
+    </div>
+  </div>
+
+  <!-- ORÇAMENTOS -->
+  <div class="orders-panel">
+    <div class="orders-header">
+      <h2>📋 Orçamentos</h2>
+      <span class="orders-count" id="orders-count">0</span>
+    </div>
+    <div class="orders-list" id="orders-list"><div class="orders-empty">Carregando orçamentos...</div></div>
+  </div>
+
+</div>
+
+<!-- MODAL CONFIGURAÇÕES DA IARA -->
+<div class="modal-overlay" id="settings-overlay">
+  <div class="modal">
+    <h3>⚙️ Configurações da Iara</h3>
+    <div class="field"><label>Nome da IA</label><input type="text" id="cfg-nome" placeholder="Iara"></div>
+    <div class="field"><label>Nome do Negócio</label><input type="text" id="cfg-negocio" placeholder="Tupy Carrocerias"></div>
+    <div class="field">
+      <label>Instruções Especiais</label>
+      <textarea id="cfg-instrucoes" rows="5" placeholder="Ex: Horário de atendimento: seg-sex 7h às 17h. Orçamento em até 24h. Atendemos toda a região..."></textarea>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5">Essas instruções são injetadas no prompt da Iara a cada mensagem. Use para horários, prazos de orçamento, região atendida, promoções, etc.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeSettingsModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveSettings()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALHE DO ORÇAMENTO -->
+<div class="modal-overlay" id="order-overlay">
+  <div class="modal" style="width:340px">
+    <h3>📋 Detalhe do Orçamento</h3>
+    <div id="order-detail-body"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeOrderModal()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ENVIAR IMAGEM NO CHAT -->
+<div class="modal-overlay" id="send-img-overlay">
+  <div class="modal" style="width:320px">
+    <h3>🖼️ Enviar Imagem</h3>
+    <div class="field">
+      <label>Selecionar imagem</label>
+      <div class="img-upload-zone" style="margin-bottom:0">
+        <input type="file" id="send-img-input" accept="image/*" onchange="onSendImgSelect(event)">
+        <div class="img-upload-icon">📷</div>
+        <div class="img-upload-text"><strong>Clique para selecionar</strong><br>ou arraste aqui</div>
+      </div>
+      <img id="send-img-preview" src="" alt="">
+    </div>
+    <div class="field"><label>Legenda (opcional)</label><input type="text" id="send-img-caption" placeholder="Descrição da imagem..."></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeSendImgModal()">Cancelar</button>
+      <button class="btn-save" id="send-img-btn" onclick="sendImageManual()" disabled>Enviar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let conversations = [], activePhone = null;
+let lastMsgCount = 0;
+let mediaRecorder = null, audioChunks = [], isRecording = false;
+let sendImgBase64 = '';
+
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+const fmt = iso => iso ? new Date(iso).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '';
+
+async function apiFetch(path, opts={}) {
+  const res = await fetch(path, { headers:{'Content-Type':'application/json'}, ...opts });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+// ── POLLING ──────────────────────────────────────────────
+async function poll() {
+  try {
+    const [convs, ords] = await Promise.all([apiFetch('/api/conversations'), apiFetch('/api/orders')]);
+    conversations = convs;
+    renderConvList();
+    renderOrders(ords);
+    if (activePhone) {
+      const conv = conversations.find(c => c.phone === activePhone);
+      if (conv) refreshChatMessages(conv);
+    }
+  } catch(e) {
+    console.warn('Poll error:', e.message);
+  }
+}
+
+async function checkWpp() {
+  try {
+    const { connected } = await apiFetch('/api/status');
+    const b = document.getElementById('wpp-status');
+    b.textContent = connected ? 'WhatsApp ✓' : 'WhatsApp';
+    b.className = 'wpp-badge' + (connected ? ' on' : '');
+  } catch {}
+}
+
+function startPolling() { poll(); checkWpp(); setInterval(poll, 4000); setInterval(checkWpp, 15000); }
+
+// ── CONVERSAS ─────────────────────────────────────────────
+function renderConvList() {
+  const el = document.getElementById('conv-list');
+  if (!conversations.length) { el.innerHTML = '<div class="conv-empty">Nenhuma conversa ainda.<br>Aguardando mensagens do WhatsApp...</div>'; return; }
+  el.innerHTML = conversations.map(c => {
+    const name = c.clientName || c.phoneClean || c.phone;
+    const initial = c.clientName ? c.clientName[0].toUpperCase() : '#';
+    const avCls = c.clientName ? '' : 'unk';
+    const actCls = c.phone === activePhone ? ' active' : '';
+    const preview = c.lastMsg || 'Iniciando...';
+    const pausedTag = c.paused ? '<span class="paused-badge">⏸ Pausado</span>' : '';
+    return `<div class="conv-item${actCls}" onclick="switchConv('${c.phone}')">
+      <div class="conv-av ${avCls}">${initial}</div>
+      <div class="conv-body">
+        <div class="conv-name">${esc(name)}</div>
+        <div class="conv-preview">${esc(preview.slice(0,40))}</div>
+      </div>
+      <div class="conv-right">
+        <div class="conv-time">${fmt(c.lastTime)}</div>
+        ${pausedTag}
+      </div>
+      <div class="conv-del" onclick="delConv('${c.phone}',event)" title="Deletar">✕</div>
+    </div>`;
+  }).join('');
+}
+
+async function delConv(phone, e) {
+  e.stopPropagation();
+  await apiFetch(`/api/conversations?phone=${encodeURIComponent(phone)}`, { method:'DELETE' });
+  if (activePhone === phone) { activePhone = null; showEmpty(); }
+  conversations = conversations.filter(c => c.phone !== phone);
+  renderConvList();
+}
+
+function switchConv(phone) {
+  activePhone = phone;
+  lastMsgCount = 0;
+  renderConvList();
+  const conv = conversations.find(c => c.phone === phone);
+  if (conv) renderChatArea(conv);
+}
+
+function showEmpty() {
+  document.getElementById('chat-wrap').innerHTML = `<div class="no-conv"><div class="no-conv-icon">💬</div><div>As conversas do WhatsApp<br>aparecem aqui em tempo real</div></div>`;
+}
+
+// ── CHAT ──────────────────────────────────────────────────
+function renderChatArea(conv) {
+  const wrap = document.getElementById('chat-wrap');
+  const topName = conv.clientName || conv.phoneClean || 'Cliente';
+  const initial = conv.clientName ? conv.clientName[0].toUpperCase() : '#';
+  const isPaused = conv.paused;
+  wrap.innerHTML = `
+    <div class="chat-topbar">
+      <div class="client-av">${initial}</div>
+      <div class="tb-info">
+        <h3>${esc(topName)}</h3>
+        <div class="tb-phone">${conv.phoneClean || ''}</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="tb-action-btn ${isPaused?'pause-on':''}" id="pause-btn" onclick="togglePause()" title="${isPaused?'IA pausada — clique para retomar':'Pausar IA'}">
+          ${isPaused ? '▶ Retomar IA' : '⏸ Pausar IA'}
+        </button>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input-area">
+      <button class="icon-btn" onclick="openSendImgModal()" title="Enviar imagem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="audio-btn" onmousedown="startRecording()" onmouseup="stopRecording()" ontouchstart="startRecording()" ontouchend="stopRecording()" title="Segure para gravar áudio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+      </button>
+      <textarea class="chat-input" id="chat-input" placeholder="Enviar mensagem manual via WhatsApp..." rows="1"
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendManual()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>`;
+  lastMsgCount = 0;
+  refreshChatMessages(conv);
+}
+
+function refreshChatMessages(conv) {
+  const container = document.getElementById('chat-messages');
+  if (!container) return;
+  const msgs = conv.messages || [];
+  if (msgs.length === lastMsgCount) return;
+  const atBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 60;
+  msgs.slice(lastMsgCount).forEach(m => {
+    const conv2 = conversations.find(c => c.phone === activePhone);
+    const clientInitial = conv2?.clientName ? conv2.clientName[0].toUpperCase() : '#';
+    // bot = Iara (direita), user = cliente (esquerda)
+    const initial = m.role === 'bot' ? 'I' : clientInitial;
+    const div = document.createElement('div');
+    div.className = `msg ${m.role}`;
+
+    let contentHtml;
+    if (m.type === 'audio') {
+      contentHtml = `<div class="bubble"><div class="audio-bubble"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zm5 9a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2z"/></svg> Áudio enviado${m.manual?'<span class="manual-tag">manual</span>':''}</div></div>`;
+    } else if (m.type === 'image') {
+      const imgSrc = m.imageBase64 || '';
+      contentHtml = `<div class="img-msg">${imgSrc?`<img src="${imgSrc}" alt="imagem">`:''}<div class="img-caption">${esc(m.content)}${m.manual?'<span class="manual-tag">manual</span>':''}</div></div>`;
+    } else {
+      contentHtml = `<div class="bubble">${esc(m.content)}${m.manual?'<span class="manual-tag">manual</span>':''}</div>`;
+    }
+
+    div.innerHTML = `<div class="msg-av">${initial}</div>
+      <div>
+        ${contentHtml}
+        <div class="msg-time">${fmt(m.time)}</div>
+      </div>`;
+    container.appendChild(div);
+  });
+  lastMsgCount = msgs.length;
+  if (atBottom) container.scrollTop = container.scrollHeight;
+}
+
+// ── PAUSAR IA ─────────────────────────────────────────────
+async function togglePause() {
+  if (!activePhone) return;
+  try {
+    const { paused } = await apiFetch('/api/pause', { method:'POST', body: JSON.stringify({ phone: activePhone }) });
+    const conv = conversations.find(c => c.phone === activePhone);
+    if (conv) conv.paused = paused;
+    renderConvList();
+    const btn = document.getElementById('pause-btn');
+    if (btn) {
+      btn.className = `tb-action-btn ${paused ? 'pause-on' : ''}`;
+      btn.textContent = paused ? '▶ Retomar IA' : '⏸ Pausar IA';
+    }
+  } catch(e) { alert('Erro: ' + e.message); }
+}
+
+// ── ENVIO MANUAL ──────────────────────────────────────────
+async function sendManual() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || !activePhone) return;
+  input.value = ''; autoResize(input);
+  const btn = document.getElementById('send-btn');
+  if (btn) btn.disabled = true;
+  try {
+    await apiFetch('/api/send', { method:'POST', body: JSON.stringify({ phone: activePhone, text }) });
+    await poll();
+  } catch(e) { alert('Erro ao enviar: ' + e.message); }
+  if (btn) btn.disabled = false;
+}
+
+function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendManual();} }
+function autoResize(el) { el.style.height='auto';el.style.height=Math.min(el.scrollHeight,110)+'px'; }
+
+// ── ÁUDIO ─────────────────────────────────────────────────
+async function startRecording() {
+  if (isRecording) return;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = async () => {
+      stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64 = reader.result;
+        try {
+          await apiFetch('/api/send-audio', { method:'POST', body: JSON.stringify({ phone: activePhone, audioBase64: base64 }) });
+          await poll();
+        } catch(e) { alert('Erro ao enviar áudio: ' + e.message); }
+      };
+      reader.readAsDataURL(blob);
+      document.getElementById('audio-btn')?.classList.remove('recording');
+    };
+    mediaRecorder.start();
+    isRecording = true;
+    document.getElementById('audio-btn')?.classList.add('recording');
+  } catch(e) { alert('Microfone não permitido: ' + e.message); }
+}
+
+function stopRecording() {
+  if (!isRecording || !mediaRecorder) return;
+  isRecording = false;
+  mediaRecorder.stop();
+}
+
+// ── IMAGEM NO CHAT ─────────────────────────────────────────
+function openSendImgModal() {
+  sendImgBase64 = '';
+  document.getElementById('send-img-preview').style.display = 'none';
+  document.getElementById('send-img-preview').src = '';
+  document.getElementById('send-img-caption').value = '';
+  document.getElementById('send-img-btn').disabled = true;
+  document.getElementById('send-img-overlay').classList.add('open');
+}
+function closeSendImgModal() { document.getElementById('send-img-overlay').classList.remove('open'); }
+
+function onSendImgSelect(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    sendImgBase64 = ev.target.result;
+    const prev = document.getElementById('send-img-preview');
+    prev.src = sendImgBase64;
+    prev.style.display = 'block';
+    document.getElementById('send-img-btn').disabled = false;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+async function sendImageManual() {
+  if (!sendImgBase64 || !activePhone) return;
+  const caption = document.getElementById('send-img-caption').value.trim();
+  closeSendImgModal();
+  try {
+    await apiFetch('/api/send-image', { method:'POST', body: JSON.stringify({ phone: activePhone, imageBase64: sendImgBase64, caption }) });
+    await poll();
+  } catch(e) { alert('Erro ao enviar imagem: ' + e.message); }
+}
+
+// ── ORÇAMENTOS ────────────────────────────────────────────
+let ordersCache = [];
+function renderOrders(ords) {
+  ordersCache = ords;
+  const list = document.getElementById('orders-list');
+  document.getElementById('orders-count').textContent = ords.length;
+  if (!ords.length) { list.innerHTML='<div class="orders-empty">Nenhum orçamento ainda.<br>Os pedidos de orçamento aparecem aqui.</div>'; return; }
+  list.innerHTML = ords.map(o=>`
+    <div class="order-card" onclick="openOrderModal('${o.id}')" style="cursor:pointer">
+      <div class="order-top"><div class="order-client">${esc(o.client)}</div><div class="order-time">${fmt(o.time || o.created_at)}</div></div>
+      <div class="order-phone">${o.phone||''}</div>
+      <div class="order-product">${esc(o.produto)}${o.qtd>1?' (x'+o.qtd+')':''}</div>
+      ${o.obs?`<div class="order-obs">${esc(o.obs)}</div>`:''}
+      <span class="order-new">Novo Orçamento</span>
+      <div class="order-actions">
+        <button class="order-btn c" onclick="event.stopPropagation();rmOrd('${o.id}')">Atendido</button>
+        <button class="order-btn r" onclick="event.stopPropagation();rmOrd('${o.id}')">Descartar</button>
+      </div>
+    </div>`).join('');
+}
+
+function openOrderModal(id) {
+  const o = ordersCache.find(x=>String(x.id)===String(id));
+  if (!o) return;
+  const linhas = [];
+  linhas.push(['Cliente', o.client]);
+  if (o.phone) linhas.push(['Telefone', o.phone]);
+  linhas.push(['Carroceria', o.produto]);
+  linhas.push(['Quantidade', o.qtd || 1]);
+  // obs traz "Caminhao: X | Cidade: Y | ..."
+  if (o.obs) String(o.obs).split('|').map(s=>s.trim()).filter(Boolean).forEach(parte=>{
+    const i = parte.indexOf(':');
+    if (i>-1) linhas.push([parte.slice(0,i).trim(), parte.slice(i+1).trim()]);
+    else linhas.push(['Obs', parte]);
+  });
+  linhas.push(['Data', fmt(o.time || o.created_at)]);
+  document.getElementById('order-detail-body').innerHTML = linhas.map(([k,v])=>`
+    <div style="display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <span style="color:var(--muted);font-weight:600">${esc(k)}</span>
+      <span style="text-align:right">${esc(String(v))}</span>
+    </div>`).join('');
+  document.getElementById('order-overlay').classList.add('open');
+}
+function closeOrderModal() { document.getElementById('order-overlay').classList.remove('open'); }
+
+async function rmOrd(id) { await apiFetch(`/api/orders?id=${id}`, { method:'DELETE' }); poll(); }
+
+// ── CONFIGURAÇÕES DA IARA ──────────────────────────────────
+async function openSettingsModal() {
+  try {
+    const cfg = await apiFetch('/api/bot-config');
+    document.getElementById('cfg-nome').value = cfg.nome || '';
+    document.getElementById('cfg-negocio').value = cfg.negocio || '';
+    document.getElementById('cfg-instrucoes').value = cfg.instrucoes || '';
+  } catch {}
+  document.getElementById('settings-overlay').classList.add('open');
+}
+function closeSettingsModal() { document.getElementById('settings-overlay').classList.remove('open'); }
+
+async function saveSettings() {
+  const nome = document.getElementById('cfg-nome').value.trim();
+  const negocio = document.getElementById('cfg-negocio').value.trim();
+  const instrucoes = document.getElementById('cfg-instrucoes').value.trim();
+  await apiFetch('/api/bot-config', { method:'POST', body: JSON.stringify({ nome, negocio, instrucoes }) });
+  closeSettingsModal();
+}
+
+startPolling();
+</script>
+</body>
+</html>
